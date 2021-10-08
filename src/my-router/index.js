@@ -30,6 +30,7 @@ class VueRouter {
     }
     return createRoute(null, local)
   }
+
 }
 
 
@@ -49,13 +50,21 @@ VueRouter.install = (Vue) => {
         this.$router = this.$options.router
         // 执行VueRouter实例上的init方法，初始化
         this.$router.init(this)
-      // 非根组件，也要把父组件的_routerRoot保存到自身身上
+        // 相当于存在_routerRoot上，并且调用Vue的defineReactive方法进行响应式处理
+        Vue.util.defineReactive(this, '_route', this.$router.history.current)
       } else {
         // 非根组件，也要把父组件的_routerRoot保存到自身身上
         this._routerRoot = this.$parent && this.$parent._routerRoot
         // 子组件也要挂上$router
         this.router = this._routerRoot.$router
       }
+    }
+  })
+
+  // 访问$route相当于访问_route
+  Object.defineProperty(Vue.prototype, '$route', {
+    get() {
+      return this._routerRoot._route
     }
   })
 }
