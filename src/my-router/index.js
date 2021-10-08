@@ -1,3 +1,5 @@
+import HashHistory from "./hashHistory"
+
 function createRoute(record, location) {
   const res = []
   if (record) {
@@ -12,15 +14,76 @@ function createRoute(record, location) {
   }
 }
 
+
+// 添加路由record
+function addRouteRecord(route, pathList, pathMap, parent) {
+  const path = parent ? `${parent.path}/${route.path}` : route.path
+  const { component, childern = null } = route
+  const record = {
+    path,
+    component,
+    parent
+  }
+  // 如果不存在
+  if (!pathMap[path]) {
+    pathList.push(path)
+    pathMap[path] = record
+  }
+  // 如果存在children
+  if (childern) {
+    childern.forEach(childern => addRouteRecord(childern, pathList, pathMap, record))
+  }
+}
+
+
+// 将传进来的routes数组转成一个Map结构的数据结构，key是path，value是对应的组件信息，
+function createRouteMap(routes) {
+  const pathList = []
+  const pathMap = {}
+
+  // 遍历传入的routes数组
+  routes.forEach(route => {
+    addRouteRecord(route, pathList, pathMap)
+  })
+
+  console.log('pathList', pathList)
+  console.log('pathMap', pathMap)
+
+  // 将pathList和pathMap返回
+  return {
+    pathList,
+    pathMap
+  }
+}
+
 class VueRouter {
   constructor(options) {
-    console.log('options', options)
+    this.options = options
+    // 默认为mode
+    this.mode = options.mode || 'hash'
+    // 判断为那种路由模式
+    switch (this.mode) {
+      case 'hash':
+        this.history = new HashHistory(this)
+        break
+      case 'hisotry':
+        // this.history = new HTML5History(this, options.base)
+        break
+      case 'abstract':
+        break
+    }
   }
+  
+  // 初始化
   init(app) {
-    console.log('app', app)
+    console.log('初始化app', app)
+    this.history.listen((route) => app._route = route)
+    // 初始化时执行一次，保证刷新能渲染
+    this.history.transitionTo(window.location.hash.slice(1))
   }
-   // 根据hash变化获取对应的所有组件
-  createMathcher(location) {
+
+  // 根据hash变化获取对应的所有组件
+  createRouteMatcher(location) {
     // 获取pathMap
     const { pathMap } = createRouteMap(this.options.routes)
     const record = pathMap[location]
@@ -30,7 +93,6 @@ class VueRouter {
     }
     return createRoute(null, local)
   }
-
 }
 
 
@@ -63,45 +125,8 @@ VueRouter.install = (Vue) => {
 
   // 访问$route相当于访问_route
   Object.defineProperty(Vue.prototype, '$route', {
-    get() {
-      return this._routerRoot._route
-    }
+    get() { return this._routerRoot._route }
   })
 }
 
-
-const pathList = []
-const pathMap = {}
-
-// 添加路由record
-function addRouteRecord(route, pathList, pathMap, parent) {
-  const path = parent ? `${parent.path}/${route.path}` : route.path
-  const { component, childern = null } = route
-  const record = {
-    path,
-    component,
-    parent
-  }
-  // 如果不存在
-  if (!pathMap[path]) {
-    pathList.push(path)
-    pathMap[path] = record
-  }
-  // 如果存在children
-  if (childern) {
-    childern.forEach(childern => addRouteRecord(childern, pathList, pathMap, record) )
-  }
-}
-
-
-// 将传进来的routes数组转成一个Map结构的数据结构，key是path，value是对应的组件信息，
-function createRouteMap(routes) {
-  // 遍历传入的routes数组
-  routes.forEach(route => {
-    addRouteRecord(route, pathList, pathMap)
-    console.log('pathList', pathList)
-    console.log('pathMap', pathMap)
-  })
-}
-
-export default createRouteMap
+export default VueRouter

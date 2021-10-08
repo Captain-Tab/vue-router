@@ -6,7 +6,7 @@ function ensureSlash() {
   window.location.hash = '/'
 }
 
-function createRoute(record, location) {
+export function createRoute(record, location) {
   const res = []
   if (record) {
     while (record) {
@@ -25,21 +25,23 @@ class HashHistory {
   constructor(router) {
     // 保存传入的VueRouter实例
     this.router = router
+    // 一开始给current赋值初始值
+    this.current = createRoute(null, { path: '/' })
     // 自动填充/#/
     ensureSlash()
     // 监听hash变化
     this.setupHashListener()
-    // 一开始给current赋值初始值
-    this.current = createRoute(null, { path: '/' })
   }
 
   // 跳转路由触发的函数, 每次hash变化都会触发
   transitionTo(location) {
     console.log('location', location)
-    let route = this.router.createMathcer(location)
+    let route = this.router.createRouteMatcher(location)
     console.log('route', route)
     // hash更新时给current赋真实值
     this.current = route
+    // 更新route
+    this.cb && this.cb(true)
   }
 
   // 监听hash变化
@@ -54,7 +56,6 @@ class HashHistory {
   listen(cb) {
     this.cb = cb
   }
-
 }
 
 export default HashHistory
