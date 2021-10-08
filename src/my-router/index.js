@@ -34,3 +34,41 @@ VueRouter.install = (Vue) => {
     }
   })
 }
+
+
+const pathList = []
+const pathMap = {}
+
+// 添加路由record
+function addRouteRecord(route, pathList, pathMap, parent) {
+  const path = parent ? `${parent.path}/${route.path}` : route.path
+  const { component, childern = null } = route
+  const record = {
+    path,
+    component,
+    parent
+  }
+  // 如果不存在
+  if (!pathMap[path]) {
+    pathList.push(path)
+    pathMap[path] = record
+  }
+  // 如果存在children
+  if (childern) {
+    childern.forEach(childern => addRouteRecord(childern, pathList, pathMap, record) )
+  }
+}
+
+
+// 将传进来的routes数组转成一个Map结构的数据结构，key是path，value是对应的组件信息，
+function createRouteMap(routes) {
+
+  // 遍历传入的routes数组
+  routes.forEach(route => {
+    addRouteRecord(route, pathList, pathMap)
+    console.log('pathList', pathList)
+    console.log('pathMap', pathMap)
+  })
+}
+
+export default createRouteMap
