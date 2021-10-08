@@ -1,9 +1,34 @@
+function createRoute(record, location) {
+  const res = []
+  if (record) {
+    while (record) {
+      res.unshift(record)
+      record = record.parent
+    }
+  }
+  return {
+    ...location,
+    matched: res
+  }
+}
+
 class VueRouter {
   constructor(options) {
     console.log('options', options)
   }
   init(app) {
     console.log('app', app)
+  }
+   // 根据hash变化获取对应的所有组件
+  createMathcher(location) {
+    // 获取pathMap
+    const { pathMap } = createRouteMap(this.options.routes)
+    const record = pathMap[location]
+    const local = { path: location }
+    if (record) {
+      return createRoute(record, local)
+    }
+    return createRoute(null, local)
   }
 }
 
