@@ -1,24 +1,10 @@
 # vue-router
+Write my own Vue route
 
-## Project setup
-```
-yarn install
-```
+### usage
+* it will load component after user enter a path
+* `$router` and `$router` can be visited in each component
+* user clicks the  `route-link` will lead to path change and load component
+* `route-view` 
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Lints and fixes files
-```
-yarn lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+>[从零实现一个简易版Vue-Router](https://juejin.cn/post/7012272146907037732)
