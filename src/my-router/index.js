@@ -62,7 +62,6 @@ function addRouteRecord(route, pathList, pathMap, parent) {
 
 // 将传进来的routes数组转成一个Map结构的数据结构，key是path，value是对应的组件信息，
 function createRouteMap(routes) {
-
   // 遍历传入的routes数组
   routes.forEach(route => {
     addRouteRecord(route, pathList, pathMap)
