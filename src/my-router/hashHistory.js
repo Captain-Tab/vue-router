@@ -48,7 +48,7 @@ class HashHistory {
   setupHashListener() {
     window.addEventListener('hashchange', () => {
       // 传入当前url的hash, 并触发跳转
-      this.transition(window.location.hash.slice(1))
+      this.transitionTo(window.location.hash.slice(1))
     })
   }
 

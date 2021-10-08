@@ -14,7 +14,6 @@ function createRoute(record, location) {
   }
 }
 
-
 // 添加路由record
 function addRouteRecord(route, pathList, pathMap, parent) {
   const path = parent ? `${parent.path}/${route.path}` : route.path
